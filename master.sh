@@ -12,3 +12,13 @@ kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-san
 sudo -u dil mkdir -p /home/dil/.kube
 cp /etc/kubernetes/admin.conf /home/dil/.kube/config
 chown dil /home/dil/.kube/config 
+
+export kubever=$(kubectl version | base64 | tr -d '\n')
+sudo -u dil kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/standalone/heapster-controller.yaml 
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml
+
+kubect apply -f /tmp/scripts/azure-init-script/kube-dashboard-admin.yaml
+
