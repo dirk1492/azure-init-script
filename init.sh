@@ -22,4 +22,7 @@ mkdir -p /tmp/scripts
 cd /tmp/scripts
 git clone https://github.com/dirk1492/azure-init-script.git
 echo "$1" >> /tmp/token.txt
- 
+
+if [ -n "$2" ]; then
+    sh "$2"
+fi
