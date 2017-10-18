@@ -30,7 +30,7 @@ else
     git clone https://github.com/dirk1492/azure-init-script.git
 fi
 
-echo "$1" >> /tmp/token.txt
+echo "$1" > /tmp/token.txt
 
 if [ -n "$2" ]; then
     sh "/tmp/scripts/azure-init-script/$2"
