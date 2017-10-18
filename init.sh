@@ -10,7 +10,8 @@ apt-get update && apt-get install -y docker.io kubelet kubeadm
 systemctl stop kubelet
 rm -rf /var/lib/kubelet
 
-ssh-keygen -t ecdsa -b 521 -f ~/.ssh/id_ecdsa -N ''
+runuser -l dil mkdir -p ~/.ssh
+runuser -l dil ssh-keygen -t ecdsa -b 521 -f ~/.ssh/id_ecdsa -N ''
 
 echo 'APT::Periodic::Update-Package-Lists "1";' > /etc/apt/apt.conf.d/10periodic
 echo 'APT::Periodic::Download-Upgradeable-Packages "1";' >> /etc/apt/apt.conf.d/10periodic
