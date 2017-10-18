@@ -20,5 +20,5 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/de
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml
 
-kubect apply -f /tmp/scripts/azure-init-script/kube-dashboard-admin.yaml
+kubectl apply -f /tmp/scripts/azure-init-script/kube-dashboard-admin.yaml
 
