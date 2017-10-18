@@ -18,9 +18,9 @@ echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/10periodic
 
 adduser dil docker
 
-mkdir -p /tmp/scripts
-cd /tmp/scripts
-git clone https://github.com/dirk1492/azure-init-script.git
+#mkdir -p /tmp/scripts
+#cd /tmp/scripts
+#git clone https://github.com/dirk1492/azure-init-script.git
 echo "$1" >> /tmp/token.txt
 
 if [ -n "$2" ]; then
