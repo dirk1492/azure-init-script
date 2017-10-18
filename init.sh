@@ -10,8 +10,8 @@ apt-get update && apt-get install -y docker.io kubelet kubeadm
 systemctl stop kubelet
 rm -rf /var/lib/kubelet
 
-runuser -l dil mkdir -p ~/.ssh
-runuser -l dil ssh-keygen -t ecdsa -b 521 -f ~/.ssh/id_ecdsa -N ''
+sudo -u dil mkdir -p /home/dil/.ssh
+[ ! -f /home/dil/.ssh/id_ecdsa ] && sudo -u dil ssh-keygen -t ecdsa -b 521 -f /home/dil/.ssh/id_ecdsa -N ''
 
 echo 'APT::Periodic::Update-Package-Lists "1";' > /etc/apt/apt.conf.d/10periodic
 echo 'APT::Periodic::Download-Upgradeable-Packages "1";' >> /etc/apt/apt.conf.d/10periodic
@@ -23,6 +23,10 @@ adduser dil docker
 #cd /tmp/scripts
 #git clone https://github.com/dirk1492/azure-init-script.git
 echo "$1" >> /tmp/token.txt
+
+echo "pwd: $(pwd)"
+
+env
 
 if [ -n "$2" ]; then
     sh "$2"
