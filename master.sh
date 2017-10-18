@@ -7,5 +7,5 @@ until docker info &>/dev/null ; do
    sleep 1
 done
 
-kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP
+kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP --token-ttl 0
  
