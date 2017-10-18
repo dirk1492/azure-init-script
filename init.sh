@@ -16,6 +16,8 @@ echo 'APT::Periodic::Update-Package-Lists "1";' > /etc/apt/apt.conf.d/10periodic
 echo 'APT::Periodic::Download-Upgradeable-Packages "1";' >> /etc/apt/apt.conf.d/10periodic
 echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/10periodic
 
+adduser dil docker
+
 mkdir -p /tmp/scripts
 cd /tmp/scripts
 git clone https://github.com/dirk1492/azure-init-script.git
