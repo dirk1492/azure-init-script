@@ -7,7 +7,7 @@ until docker info &>/dev/null ; do
    sleep 1
 done
 
-kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP --token-ttl 0
+kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP --token-ttl 0 --config /tmp/scripts/azure-init-script/kubeadm.yaml
 
 sudo -u dil mkdir -p /home/dil/.kube
 cp /etc/kubernetes/admin.conf /home/dil/.kube/config
@@ -21,4 +21,8 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/de
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml
 
 kubectl apply -f /tmp/scripts/azure-init-script/kube-dashboard-admin.yaml
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+
 
