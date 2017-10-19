@@ -7,7 +7,7 @@ until docker info &>/dev/null ; do
    sleep 1
 done
 
-kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP --token-ttl 0 --config /tmp/scripts/azure-init-script/kubeadm.yaml
+kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP, --token-ttl 0 --config /tmp/scripts/azure-init-script/kubeadm.yaml
 
 sudo -u dil mkdir -p /home/dil/.kube
 cp /etc/kubernetes/admin.conf /home/dil/.kube/config
@@ -15,6 +15,8 @@ chown dil /home/dil/.kube/config
 
 export kubever=$(kubectl version | base64 | tr -d '\n')
 sudo -u dil kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/rbac/heapster-rbac.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/standalone/heapster-controller.yaml 
 
