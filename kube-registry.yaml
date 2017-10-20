@@ -13,8 +13,6 @@ spec:
     matchLabels:
       k8s-app: kube-registry
       version: v0
-    k8s-app: kube-registry
-    version: v0
   template:
     metadata:
       labels:
