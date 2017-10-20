@@ -5,6 +5,7 @@ metadata:
     k8s-app: kube-registry-proxy
     kubernetes.io/cluster-service: "true"
   name: kube-registry-proxy
+  namespace: kube-system
 spec:
   ports:
   - name: registry
