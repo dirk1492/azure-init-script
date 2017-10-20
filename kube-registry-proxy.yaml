@@ -3,6 +3,7 @@ kind: DaemonSet
 metadata:
   labels:
     name: kube-registry-proxy
+  namespace: kube-system
   name: kube-registry-proxy
 spec:
   selector:
