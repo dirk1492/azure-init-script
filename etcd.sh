@@ -1,6 +1,7 @@
 #!/bin/bash
 
 HOSTNAME=$(hostname)
+HOSTIP=$(ifconfig eth0 | grep "inet addr:" | cut -d':' -f 2 | cut -d' ' -f 1)
 
 
 docker run -d \
