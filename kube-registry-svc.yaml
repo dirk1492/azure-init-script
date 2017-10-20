@@ -5,8 +5,8 @@ metadata:
     k8s-app: kube-registry
     kubernetes.io/cluster-service: "true"
     kubernetes.io/name: KubeRegistry
-    namespace: kube-system
-name: kube-registry
+  namespace: kube-system
+  name: kube-registry
 spec:
   ports:
   - name: registry
