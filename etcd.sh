@@ -3,6 +3,10 @@
 HOSTNAME=$(hostname)
 HostIP=$(ifconfig eth0 | grep "inet addr:" | cut -d':' -f 2 | cut -d' ' -f 1)
 
+docker stop etcd && docker rm etcd
+rm -rf /var/lib/etcd-cluster
+mkdir -p /var/lib/etcd-cluster
+
 docker run -d \
 --restart always \
 -v /etc/ssl/certs:/etc/ssl/certs \
