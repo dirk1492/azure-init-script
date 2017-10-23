@@ -1,11 +1,14 @@
 #!/bin/sh
 
+BASEDIR="$(realpath $(dirname $0))"
 IP=$(dig k8s-dil001.eastus.cloudapp.azure.com | grep "^k8s-dil001.eastus.cloudapp.azure.com" | awk '{ print $5 }')
 TOKEN=$(cat /tmp/token.txt)
 
 until docker info &>/dev/null ; do
    sleep 1
 done
+
+cat "$BASEDIR/kubeadm.yaml" | sed -e "s/<<IP>>/$IP/" | sed -e "s/<<TOKEN>>/$TOKEN/g" > /tmp/kubeadm.yaml
 
 kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP, --token-ttl 0 --config /tmp/scripts/azure-init-script/kubeadm.yaml
 
