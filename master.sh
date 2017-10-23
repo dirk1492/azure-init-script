@@ -9,6 +9,10 @@ done
 
 kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP, --token-ttl 0 --config /tmp/scripts/azure-init-script/kubeadm.yaml
 
+while [ "$(curl -sL -w "%{http_code}\\n" "https://master/api/v1" -o /dev/null --connect-timeout 1 --max-time 1 --insecure)" != "200" ] ; do
+ sleep 5
+done
+
 sudo -u dil mkdir -p /home/dil/.kube
 cp /etc/kubernetes/admin.conf /home/dil/.kube/config
 chown dil /home/dil/.kube/config 
@@ -23,6 +27,8 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/de
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml
 
 kubectl apply -f /tmp/scripts/azure-init-script/kube-dashboard-admin.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/rook-operator.yaml
 
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
