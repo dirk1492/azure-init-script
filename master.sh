@@ -8,9 +8,7 @@ until docker info &>/dev/null ; do
    sleep 1
 done
 
-cat "$BASEDIR/kubeadm.yaml" | sed -e "s/<<IP>>/$IP/" | sed -e "s/<<TOKEN>>/$TOKEN/g" > /tmp/kubeadm.yaml
-
-kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans $IP, --token-ttl 0 --config /tmp/scripts/azure-init-script/kubeadm.yaml
+kubeadm init --token $TOKEN --apiserver-bind-port 443 --apiserver-cert-extra-sans "k8s-dil001.eastus.cloudapp.azure.com,$IP" --token-ttl 0
 
 while [ "$(curl -sL -w "%{http_code}\\n" "https://master/api/v1" -o /dev/null --connect-timeout 1 --max-time 1 --insecure)" != "200" ] ; do
  sleep 5
@@ -25,11 +23,13 @@ sudo -u dil kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kub
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/rbac/heapster-rbac.yaml
 
+kubectl apply -f "$BASEDIR/heapster-rbac.yaml"
+
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/standalone/heapster-controller.yaml 
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml
 
-kubectl apply -f /tmp/scripts/azure-init-script/kube-dashboard-admin.yaml
+kubectl apply -f "$BASEDIR/kube-dashboard-admin.yaml"
 
 kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/rook-operator.yaml
 
