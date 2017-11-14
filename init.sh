@@ -7,7 +7,7 @@ apt-get update && apt-get dist-upgrade -y
 if [ ! -f /etc/apt/sources.list.d/kubernetes.list ] ; then
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
     echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" >> /etc/apt/sources.list.d/kubernetes.list 
-    apt-get update && apt-get install -y docker.io kubelet kubeadm
+    apt-get update && apt-get install -y docker.io kubelet kubeadm glusterfs-client
 
     systemctl stop kubelet
     rm -rf /var/lib/kubelet
@@ -22,6 +22,11 @@ echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/10periodic
 
 adduser dil docker
 
+sed -i "s/^\/dev\/disk\/cloud/#\/dev\/disk\/cloud/g" /etc/fstab
+umount /mnt
+wipefs -fa /dev/sdb1
+pvcreate /dev/sdb1
+
 if [ -d /tmp/scripts/azure-init-script ]; then
     git pull
 else
@@ -29,6 +34,9 @@ else
     cd /tmp/scripts
     git clone https://github.com/dirk1492/azure-init-script.git
 fi
+
+echo "dm_thin_pool" >> /etc/modules
+modprobe dm_thin_pool
 
 echo "$1" > /tmp/token.txt
 
