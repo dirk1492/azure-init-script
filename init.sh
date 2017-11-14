@@ -2,14 +2,26 @@
 
 export DEBIAN_FRONTEND="noninteractive"
 
-sleep 30
+#sleep 30
 
 dpkg -l docker.io >/dev/null 2>&1
 if (($?>0)); then
-  apt-add-repository ppa:ansible/ansible
-  apt-get install -y ansible
+  which ansible > /dev/null  
+  if [ $? -ne 0 ]; then	
+    apt-add-repository ppa:ansible/ansible
+    apt-get install -y ansible
+  fi
 fi
 
+if [ -d /tmp/scripts/azure-init-script ]; then
+    git pull
+else
+    mkdir -p /tmp/scripts
+    cd /tmp/scripts
+    git clone https://github.com/dirk1492/azure-init-script.git
+fi
+
+cd /tmp/scripts/azure-init-script
 ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory main.yml
 
 # apt-get update && apt-get dist-upgrade -y 
