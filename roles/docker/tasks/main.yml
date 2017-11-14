@@ -11,16 +11,20 @@
     state: present
     filename: 'kubernetes'
 
+- name: Update repositories cache and install aptiotude package
+  apt:
+    name: aptitude
+    update_cache: yes
+
 - name: Update repositories cache and install upgrades
   apt:
-    update_cache: yes
     upgrade: full
 
-- name: Update repositories cache and install kubernetes package
+- name: Install kubernetes package
   apt:
     name: kubeadm
 
-- name: Update repositories cache and install glusterfs-client package
+- name: Install glusterfs-client package
   apt:
     name: glusterfs-client
 
