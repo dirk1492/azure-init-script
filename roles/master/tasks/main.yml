@@ -34,14 +34,14 @@
 - stat: path=/etc/kubernetes/admin.conf
   register: admin_st
 
-- name: Copy admin.conf to user directory
-  shell: cp /etc/kubernetes/admin.conf /home/dil/.kube/config
-  when: admin_st.stat.exists == True
-
 - name: Create kube home dir
   file:
     path: /home/dil/.kube/
     state: directory
+
+- name: Copy admin.conf to user directory
+  shell: cp /etc/kubernetes/admin.conf /home/dil/.kube/config
+  when: admin_st.stat.exists == True
 
 - name: Set user of admin.conf
   file: 
