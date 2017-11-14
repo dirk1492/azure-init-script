@@ -2,44 +2,54 @@
 
 export DEBIAN_FRONTEND="noninteractive"
 
-apt-get update && apt-get dist-upgrade -y 
+sleep 30
 
-if [ ! -f /etc/apt/sources.list.d/kubernetes.list ] ; then
-    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" >> /etc/apt/sources.list.d/kubernetes.list 
-    apt-get update && apt-get install -y docker.io kubelet kubeadm glusterfs-client
-
-    systemctl stop kubelet
-    rm -rf /var/lib/kubelet
+dpkg -l docker.io >/dev/null 2>&1
+if (($?>0)); then
+  apt-add-repository ppa:ansible/ansible
+  apt-get install -y ansible
 fi
 
-sudo -u dil mkdir -p /home/dil/.ssh
-[ ! -f /home/dil/.ssh/id_ecdsa ] && sudo -u dil ssh-keygen -t ecdsa -b 521 -f /home/dil/.ssh/id_ecdsa -N ''
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory main.yml
 
-echo 'APT::Periodic::Update-Package-Lists "1";' > /etc/apt/apt.conf.d/10periodic
-echo 'APT::Periodic::Download-Upgradeable-Packages "1";' >> /etc/apt/apt.conf.d/10periodic
-echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/10periodic
+# apt-get update && apt-get dist-upgrade -y 
 
-adduser dil docker
+# if [ ! -f /etc/apt/sources.list.d/kubernetes.list ] ; then
+#     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+#     echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" >> /etc/apt/sources.list.d/kubernetes.list 
+#     apt-get update && apt-get install -y docker.io kubelet kubeadm glusterfs-client
 
-sed -i "s/^\/dev\/disk\/cloud/#\/dev\/disk\/cloud/g" /etc/fstab
-umount /mnt
-wipefs -fa /dev/sdb1
-pvcreate /dev/sdb1
+#     systemctl stop kubelet
+#     rm -rf /var/lib/kubelet
+# fi
 
-if [ -d /tmp/scripts/azure-init-script ]; then
-    git pull
-else
-    mkdir -p /tmp/scripts
-    cd /tmp/scripts
-    git clone https://github.com/dirk1492/azure-init-script.git
-fi
+# sudo -u dil mkdir -p /home/dil/.ssh
+# [ ! -f /home/dil/.ssh/id_ecdsa ] && sudo -u dil ssh-keygen -t ecdsa -b 521 -f /home/dil/.ssh/id_ecdsa -N ''
 
-echo "dm_thin_pool" >> /etc/modules
-modprobe dm_thin_pool
+# echo 'APT::Periodic::Update-Package-Lists "1";' > /etc/apt/apt.conf.d/10periodic
+# echo 'APT::Periodic::Download-Upgradeable-Packages "1";' >> /etc/apt/apt.conf.d/10periodic
+# echo 'APT::Periodic::Unattended-Upgrade "1";' >> /etc/apt/apt.conf.d/10periodic
 
-echo "$1" > /tmp/token.txt
+# adduser dil docker
 
-if [ -n "$2" ]; then
-    sh "/tmp/scripts/azure-init-script/$2"
-fi
+# sed -i "s/^\/dev\/disk\/cloud/#\/dev\/disk\/cloud/g" /etc/fstab
+# umount /mnt
+# wipefs -fa /dev/sdb1
+# pvcreate /dev/sdb1
+
+# if [ -d /tmp/scripts/azure-init-script ]; then
+#     git pull
+# else
+#     mkdir -p /tmp/scripts
+#     cd /tmp/scripts
+#     git clone https://github.com/dirk1492/azure-init-script.git
+# fi
+
+# echo "dm_thin_pool" >> /etc/modules
+# modprobe dm_thin_pool
+
+# echo "$1" > /tmp/token.txt
+
+# if [ -n "$2" ]; then
+#     sh "/tmp/scripts/azure-init-script/$2"
+# fi
