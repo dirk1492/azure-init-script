@@ -15,9 +15,9 @@ if [ $? -ne 0 ];  then
   which ansible > /dev/null  
   if [ $? -ne 0 ]; then	
     
-    if [ ! -f "/etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list" ]; then
-      apt-add-repository -y ppa:ansible/ansible
-    fi
+    #if [ ! -f "/etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list" ]; then
+    #  apt-add-repository -y ppa:ansible/ansible
+    #fi
     apt update
     apt install -y ansible
   fi

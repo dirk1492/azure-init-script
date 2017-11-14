@@ -1,5 +1,11 @@
 ---
-- name: Add apt key
+
+- name: Add ansible repository
+  apt_repository:
+    repo: ppa:ansible/ansible
+    state: present
+
+- name: Add google apt key
   apt_key:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
     state: present
@@ -8,7 +14,6 @@
   apt_repository:
     repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
     state: present
-    filename: 'kubernetes'
 
 - name: Update repositories cache and install upgrades
   apt:
