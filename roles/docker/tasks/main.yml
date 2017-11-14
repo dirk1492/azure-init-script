@@ -1,2 +1,42 @@
 ---
-# tasks file for docker
+- name: Add apt key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add kubernetes repository
+  apt_repository:
+    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: 'kubernetes'
+
+- name: Update repositories cache and install kubernetes package
+  apt:
+    name: kubeadm
+    update_cache: yes
+    upgrade: full
+
+- name: Update repositories cache and install glusterfs-client package
+  apt:
+    name: glusterfs-client
+
+- name: Set unattended updates
+  copy:
+    src: 10periodic
+    dest: /etc/apt/apt.conf.d/10periodic
+    owner: root
+    group: root
+    mode: 0644   
+
+- modprobe:
+    name: dm_thin_pool
+    state: present    
+
+- modprobe:
+    name: dm_snapshot
+    state: present    
+
+- modprobe:
+    name: dm_mirror
+    state: present    
+
