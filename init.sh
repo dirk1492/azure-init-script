@@ -2,18 +2,22 @@
 
 export DEBIAN_FRONTEND="noninteractive"
 
+echo "sleep 10 seconds"
 sleep 10
 
-# wait for dpkg 
+echo "wait for dpkg to get unlocked" 
 while fuser /var/lib/dpkg/lock >/dev/null 2>&1 ; do
     sleep 0.5
 done 
 
 dpkg -l docker.io >/dev/null 2>&1
-if (($?>0)); then
+if [ $? -ne 0 ];  then
   which ansible > /dev/null  
   if [ $? -ne 0 ]; then	
-    apt-add-repository ppa:ansible/ansible
+    
+    if [ ! -f "/etc/apt/sources.list.d/ansible-ubuntu-ansible-xenial.list" ]; then
+      apt-add-repository -y ppa:ansible/ansible
+    fi
     apt-get install -y ansible
   fi
 fi
