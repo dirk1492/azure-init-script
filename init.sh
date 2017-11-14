@@ -32,7 +32,12 @@ else
 fi
 
 cd /tmp/scripts/azure-init-script
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory main.yml
+
+if [ -n "$2" ]; then
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory basic.yml
+else     
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory $2.yml
+fi
 
 # apt-get update && apt-get dist-upgrade -y 
 
