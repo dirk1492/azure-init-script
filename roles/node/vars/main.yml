@@ -1,2 +1,2 @@
 ---
-# vars file for node
+k8s-token: {{ k8s-token }}
