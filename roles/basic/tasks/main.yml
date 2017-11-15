@@ -39,18 +39,6 @@
   apt:
     name: glusterfs-client
 
-- name: Set unattended updates
-  copy:
-    src: 10periodic
-    dest: /etc/apt/apt.conf.d/10periodic
-    owner: root
-    group: root
-    mode: 0644   
-
-- modprobe:
-    name: dm_thin_pool
-    state: present    
-
 - modprobe:
     name: dm_snapshot
     state: present    
@@ -58,4 +46,12 @@
 - modprobe:
     name: dm_mirror
     state: present    
+
+#- name: Set unattended updates
+#  copy:
+#    src: 10periodic
+#    dest: /etc/apt/apt.conf.d/10periodic
+#    owner: root
+#    group: root
+#    mode: 0644   
 
