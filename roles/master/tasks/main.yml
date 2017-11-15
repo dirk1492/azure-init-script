@@ -2,7 +2,7 @@
 - stat: path=/etc/kubernetes/admin.conf
   register: admin_st
 
-- name: Init kubernets master
+- name: Init kubernets master ({{ k8s-token }})
   shell: kubeadm init --apiserver-bind-port {{ apiserver_bind_port }} --token {{ k8s-token }}
   when: admin_st.stat.exists == False
 
