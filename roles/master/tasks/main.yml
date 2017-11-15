@@ -2,33 +2,8 @@
 - stat: path=/etc/kubernetes/admin.conf
   register: admin_st
 
-- name: Generate bootstrap token
-  shell: kubeadm token generate
-  register: kube_token_output
-  when: admin_st.stat.exists == False
-
-- copy: content="{{ kube_token_output.stdout }}" dest=/tmp/token.txt
-  when: admin_st.stat.exists == False
-
-- fetch:
-    src: /tmp/token.txt
-    dest: roles/node/files/token.txt
-    flat: yes
-  when: admin_st.stat.exists == False
-
-- copy:
-    content: "{{hostvars[inventory_hostname]['ansible_default_ipv4']['address']}}:{{ apiserver_bind_port }}"
-    dest: /tmp/master.txt
-  when: admin_st.stat.exists == False
-
-- fetch:
-    src: /tmp/master.txt
-    dest: roles/node/files/master.txt
-    flat: yes
-  when: admin_st.stat.exists == False
-
 - name: Init kubernets master
-  shell: kubeadm init --apiserver-bind-port {{ apiserver_bind_port }} --token {{ kube_token_output.stdout }}
+  shell: kubeadm init --apiserver-bind-port {{ apiserver_bind_port }} --token {{ k8s-token }}
   when: admin_st.stat.exists == False
 
 - stat: path=/etc/kubernetes/admin.conf

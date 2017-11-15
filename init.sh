@@ -33,10 +33,14 @@ fi
 
 cd /tmp/scripts/azure-init-script
 
+if [ -n "$2" ]; then
+    TOKEN="--extra-vars \"k8s-token=$2\""
+fi
+
 if [ -n "$1" ]; then
-    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory $1.yml
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory $TOKEN $1.yml 
 else     
-    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory basic.yml
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory $TOKEN basic.yml
 fi
 
 # apt-get update && apt-get dist-upgrade -y 
