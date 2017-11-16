@@ -26,19 +26,24 @@
     mode: 0600
   when: admin_st.stat.exists == True
 
-- name: Deploy Weave Net 
+- name: Deploy weave net 
   shell: kubectl apply -f https://git.io/weave-kube-1.6 --kubeconfig /etc/kubernetes/admin.conf
 
-- name: Deploy Kubernetes Dashboard 
+- name: Deploy kubernetes dashboard 
   shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml --kubeconfig /etc/kubernetes/admin.conf
 
-- name: Deploy Kubernetes Dashboard Admin RBAC 
+- name: Deploy kubernetes dashboard admin RBAC 
   shell: kubectl apply -f kube-dashboard-admin.yaml --kubeconfig /etc/kubernetes/admin.conf
 
-- name: Deploy Heapster 
+- name: Deploy heapster 
   shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/standalone/heapster-controller.yaml --kubeconfig /etc/kubernetes/admin.conf
   
-- name: Deploy Heapster RBAC 
+- name: Deploy heapster RBAC 
   shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/rbac/heapster-rbac.yaml --kubeconfig /etc/kubernetes/admin.conf
 
+- name: Create namespace heketi 
+  shell: kubectl create ns heketi --kubeconfig /etc/kubernetes/admin.conf
+
+- name: Deploy glusterfs stateful set 
+  shell: kubectl apply -f glusterfs-statefulset.yaml --kubeconfig /etc/kubernetes/admin.conf
   
