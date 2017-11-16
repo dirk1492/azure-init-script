@@ -30,4 +30,15 @@
   shell: kubectl apply -f https://git.io/weave-kube-1.6 --kubeconfig /etc/kubernetes/admin.conf
 
 - name: Deploy Kubernetes Dashboard 
-  shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard-arm.yaml --kubeconfig /etc/kubernetes/admin.conf
+  shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml --kubeconfig /etc/kubernetes/admin.conf
+
+- name: Deploy Kubernetes Dashboard Admin RBAC 
+  shell: kubectl apply -f kube-dashboard-admin.yaml --kubeconfig /etc/kubernetes/admin.conf
+
+- name: Deploy Heapster 
+  shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/standalone/heapster-controller.yaml --kubeconfig /etc/kubernetes/admin.conf
+  
+- name: Deploy Heapster RBAC 
+  shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/rbac/heapster-rbac.yaml --kubeconfig /etc/kubernetes/admin.conf
+
+  
