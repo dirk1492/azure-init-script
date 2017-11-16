@@ -42,7 +42,7 @@
   shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/rbac/heapster-rbac.yaml --kubeconfig /etc/kubernetes/admin.conf
 
 - name: Create namespace heketi 
-  shell: kubectl create ns heketi --kubeconfig /etc/kubernetes/admin.conf
+  shell: kubectl create ns heketi --kubeconfig /etc/kubernetes/admin.conf > /dev/null 2>&1
   ignore_errors: yes
 
 - name: Deploy glusterfs stateful set 
