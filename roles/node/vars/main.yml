@@ -1,2 +1,3 @@
 ---
-k8s-token: {{ k8s-token }}
+apiserver_bind_port: 443
+k8s-token: ab52e4.1cc0f83384065993
