@@ -43,6 +43,7 @@
 
 - name: Create namespace heketi 
   shell: kubectl create ns heketi --kubeconfig /etc/kubernetes/admin.conf
+  ignore_errors: yes
 
 - name: Deploy glusterfs stateful set 
   shell: kubectl apply -f glusterfs-statefulset.yaml --kubeconfig /etc/kubernetes/admin.conf
