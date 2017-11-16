@@ -1,2 +1,9 @@
 ---
-# tasks file for node
+- name: Check if kubelet is running
+  shell: systemctl is-active kubelet
+  ignore_errors: yes
+  register: check_out
+
+- name: Join kubernets node ({{ k8s_token }})
+  shell: kubeadm join --token {{ k8s_token }} master:{{apiserver_bind_port}} --discovery-token-unsafe-skip-ca-verification
+  when: check_out.rc != 0
