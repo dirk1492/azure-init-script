@@ -3,6 +3,7 @@
   shell: systemctl is-active kubelet
   ignore_errors: yes
   register: check_out
+  changed_when: check_out.rc != 0
 
 - name: Join kubernets node ({{ k8s_token }})
   shell: kubeadm join --token {{ k8s_token }} master:{{apiserver_bind_port}} --discovery-token-unsafe-skip-ca-verification
