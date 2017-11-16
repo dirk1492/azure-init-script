@@ -34,7 +34,7 @@ fi
 cd /tmp/scripts/azure-init-script
 
 if [ -n "$2" ]; then
-    TOKEN="--extra-vars \"k8s-token=$2\""
+    TOKEN="--extra-vars \"k8s_token=$2\""
 fi
 
 if [ -n "$1" ]; then
