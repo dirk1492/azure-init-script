@@ -40,9 +40,9 @@ else
 fi
 
 if [ -n "$1" ]; then
-    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="$TOKEN" $1.yml 
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="k8s_token=$TOKEN" $1.yml 
 else     
-    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="$TOKEN" basic.yml
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="k8s_token=$TOKEN" basic.yml
 fi
 
 # apt-get update && apt-get dist-upgrade -y 
