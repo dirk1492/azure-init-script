@@ -39,10 +39,16 @@ else
     TOKEN="edfe65.2dcb815d96fd4a5b"    
 fi
 
+if [ -n "$3" ]; then
+    PORT="$3"
+else
+    PORT="443"    
+fi
+
 if [ -n "$1" ]; then
-    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="k8s_token=$TOKEN" $1.yml 
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="k8s_token=$TOKEN apiserver_bind_port=$PORT" $1.yml 
 else     
-    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="k8s_token=$TOKEN" basic.yml
+    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="k8s_token=$TOKEN apiserver_bind_port=$PORT" basic.yml
 fi
 
 # apt-get update && apt-get dist-upgrade -y 
