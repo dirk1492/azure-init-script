@@ -3,6 +3,7 @@
   shell: systemctl is-active kubelet
   ignore_errors: yes
   register: check_out
+  failed_when: false
   changed_when: check_out.rc != 0
 
 - name: Set /proc/sys/net/bridge/bridge-nf-call-iptables to 1
