@@ -80,9 +80,8 @@ spec:
         storagenode: glusterfs
       tolerations:
       - effect: NoSchedule
-        key: node-role.kubernetes.io
+        key: node-role.kubernetes.io/master
         operator: Equal
-        value: master
       volumes:
       - hostPath:
           path: /var/lib/heketi
