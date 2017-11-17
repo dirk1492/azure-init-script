@@ -5,6 +5,10 @@
   register: check_out
   changed_when: check_out.rc != 0
 
+- name: Set /proc/sys/net/bridge/bridge-nf-call-iptables to 1
+  shell: echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+  when: check_out.rc != 0
+
 - name: Join kubernets node ({{ k8s_token }})
   shell: kubeadm join --token {{ k8s_token }} master:{{apiserver_bind_port}} --discovery-token-unsafe-skip-ca-verification
   when: check_out.rc != 0
