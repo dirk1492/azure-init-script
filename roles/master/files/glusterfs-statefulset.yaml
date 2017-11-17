@@ -7,6 +7,7 @@ metadata:
   labels:
     glusterfs: deployment
   name: glusterfs
+  namespace: heketi
 spec:
   podManagementPolicy: Parallel
   replicas: 3
@@ -71,6 +72,8 @@ spec:
           name: glusterfs-dev
         - mountPath: /sys/fs/cgroup
           name: glusterfs-cgroup
+        - mountPath: /bricks
+          name: glusterfs-bricks
       dnsPolicy: ClusterFirst
       hostNetwork: true
       nodeSelector:
@@ -83,33 +86,29 @@ spec:
       volumes:
       - hostPath:
           path: /var/lib/heketi
-          type: ""
         name: glusterfs-heketi
       - emptyDir: {}
         name: glusterfs-run
       - hostPath:
           path: /run/lvm
-          type: ""
         name: glusterfs-lvm
       - hostPath:
           path: /etc/glusterfs
-          type: ""
         name: glusterfs-etc
       - hostPath:
           path: /var/log/glusterfs
-          type: ""
         name: glusterfs-logs
       - hostPath:
           path: /var/lib/glusterd
-          type: ""
         name: glusterfs-config
       - hostPath:
           path: /dev
-          type: ""
         name: glusterfs-dev
       - hostPath:
           path: /sys/fs/cgroup
-          type: ""
         name: glusterfs-cgroup
+      - hostPath:
+          path: /bricks
+        name: glusterfs-bricks
   updateStrategy:
     type: RollingUpdate

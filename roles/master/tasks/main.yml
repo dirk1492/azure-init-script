@@ -2,8 +2,8 @@
 - stat: path=/etc/kubernetes/admin.conf
   register: admin_st
 
-- name: Init kubernets master ({{ k8s_token }})
-  shell: kubeadm init --apiserver-bind-port {{ apiserver_bind_port }} --token {{ k8s_token }}
+- name: Init kubernets master {{ public_ip }}:{{ apiserver_bind_port }} ({{ k8s_token }})
+  shell: kubeadm init --apiserver-bind-port {{ apiserver_bind_port }} --token {{ k8s_token }} --apiserver-cert-extra-sans {{ public_ip }}
   when: admin_st.stat.exists == False
 
 - stat: path=/etc/kubernetes/admin.conf
@@ -15,8 +15,7 @@
     state: directory
 
 - name: Copy admin.conf to user directory
-  shell: cp /etc/kubernetes/admin.conf /home/dil/.kube/config
-  when: admin_st.stat.exists == True
+  copy: remote_src=True src=/etc/kubernetes/admin.conf dest=/home/dil/.kube/config
 
 - name: Set user of admin.conf
   file: 
@@ -44,12 +43,19 @@
 - name: Create namespace heketi 
   shell: kubectl create ns heketi --kubeconfig /etc/kubernetes/admin.conf > /dev/null 2>&1
   ignore_errors: yes
+  register: ns_out
+  changed_when: ns_out.rc == 0
+  failed_when: false
+
+- name: Creates gluster bricks directory
+  file: path=/bricks state=directory
 
 - name: Deploy glusterfs stateful set 
   shell: kubectl apply -f roles/master/files/glusterfs-statefulset.yaml --kubeconfig /etc/kubernetes/admin.conf
   
 - name: Label glusterfs nodes
-  shell: kubectl label node --all --overwrite storagenode=glusterfs
+  shell: kubectl label node --all storagenode=glusterfs > /dev/null 2>&1
+  ignore_errors: yes
   register: label_out
   changed_when: label_out.rc == 0
   failed_when: false
