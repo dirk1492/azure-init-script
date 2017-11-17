@@ -50,3 +50,6 @@
   
 - name: Label glusterfs nodes
   shell: kubectl label node --all --overwrite storagenode=glusterfs
+  register: label_out
+  changed_when: when: label_out.rc == 0
+  failed_when: false
