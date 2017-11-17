@@ -58,7 +58,7 @@
   shell: kubectl apply -f roles/master/files/glusterfs-statefulset.yaml --kubeconfig /etc/kubernetes/admin.conf
   
 - name: Label glusterfs nodes
-  shell: kubectl label node --all storagenode=glusterfs > /dev/null 2>&1
+  shell: kubectl label node {{ inventory_hostname }} storagenode=glusterfs > /dev/null 2>&1
   ignore_errors: yes
   register: label_out
   changed_when: label_out.rc == 0

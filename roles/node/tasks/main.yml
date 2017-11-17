@@ -13,3 +13,11 @@
 - name: Join kubernets node ({{ k8s_token }})
   shell: kubeadm join --token {{ k8s_token }} master:{{apiserver_bind_port}} --discovery-token-unsafe-skip-ca-verification
   when: check_out.rc != 0
+
+- name: Label glusterfs storagenode
+  shell: kubectl label node {{ inventory_hostname }} storagenode=glusterfs > /dev/null 2>&1
+  ignore_errors: yes
+  register: label_out
+  changed_when: label_out.rc == 0
+  failed_when: false
+  
