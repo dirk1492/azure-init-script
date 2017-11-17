@@ -24,6 +24,7 @@ if [ $? -ne 0 ];  then
 fi
 
 if [ -d /tmp/scripts/azure-init-script ]; then
+    cd /tmp/scripts/azure-init-script
     git pull
 else
     mkdir -p /tmp/scripts
