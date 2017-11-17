@@ -2,6 +2,10 @@
 - stat: path=/etc/kubernetes/admin.conf
   register: admin_st
 
+- name: Set /proc/sys/net/bridge/bridge-nf-call-iptables to 1
+  shell: echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+  when: admin_st.stat.exists == False
+
 - name: Init kubernets master {{ public_ip }}:{{ apiserver_bind_port }} ({{ k8s_token }})
   shell: kubeadm init --apiserver-bind-port {{ apiserver_bind_port }} --token {{ k8s_token }} --apiserver-cert-extra-sans {{ public_ip }}
   when: admin_st.stat.exists == False
