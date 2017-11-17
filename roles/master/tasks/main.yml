@@ -33,7 +33,7 @@
   shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml --kubeconfig /etc/kubernetes/admin.conf
 
 - name: Deploy kubernetes dashboard admin RBAC 
-  shell: kubectl apply -f kube-dashboard-admin.yaml --kubeconfig /etc/kubernetes/admin.conf
+  shell: kubectl apply -f roles/master/files/kube-dashboard-admin.yaml --kubeconfig /etc/kubernetes/admin.conf
 
 - name: Deploy heapster 
   shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/standalone/heapster-controller.yaml --kubeconfig /etc/kubernetes/admin.conf
@@ -46,5 +46,5 @@
   ignore_errors: yes
 
 - name: Deploy glusterfs stateful set 
-  shell: kubectl apply -f glusterfs-statefulset.yaml --kubeconfig /etc/kubernetes/admin.conf
+  shell: kubectl apply -f roles/master/files/glusterfs-statefulset.yaml --kubeconfig /etc/kubernetes/admin.conf
   
