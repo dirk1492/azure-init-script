@@ -49,4 +49,4 @@
   shell: kubectl apply -f roles/master/files/glusterfs-statefulset.yaml --kubeconfig /etc/kubernetes/admin.conf
   
 - name: Label glusterfs nodes
-  shell: kubectl label node --all storagenode=glusterfs
+  shell: kubectl label node --all --overwrite storagenode=glusterfs
