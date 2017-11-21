@@ -58,6 +58,8 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/heketi
           name: glusterfs-heketi
+        - mountPath: /bricks
+          name: glusterfs-bricks
         - mountPath: /run
           name: glusterfs-run
         - mountPath: /run/lvm
@@ -86,6 +88,9 @@ spec:
       - hostPath:
           path: /var/lib/heketi
         name: glusterfs-heketi
+      - hostPath:
+          path: /bricks
+        name: glusterfs-bricks
       - emptyDir: {}
         name: glusterfs-run
       - hostPath:
