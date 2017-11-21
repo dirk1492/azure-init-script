@@ -76,4 +76,5 @@ spec:
       volumes:
       - hostPath:
           path: /var/lib/heketi
+          type: DirectoryOrCreate
         name: db
