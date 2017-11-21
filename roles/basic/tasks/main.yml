@@ -47,6 +47,12 @@
     name: dm_mirror
     state: present    
 
+- modprobe:
+    name: dm_thin_pool
+    state: present    
+
+
+
 #- name: Set unattended updates
 #  copy:
 #    src: 10periodic
