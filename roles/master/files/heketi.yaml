@@ -1,0 +1,79 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    glusterfs: heketi-deployment
+  name: heketi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      glusterfs: heketi-pod
+      name: heketi
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        glusterfs: heketi-pod
+        name: heketi
+      name: heketi
+    spec:
+      containers:
+      - env:
+        - name: HEKETI_EXECUTOR
+          value: kubernetes
+        - name: HEKETI_FSTAB
+          value: /var/lib/heketi/fstab
+        - name: HEKETI_SNAPSHOT_LIMIT
+          value: "14"
+        - name: HEKETI_KUBE_GLUSTER_DAEMONSET
+          value: "y"
+        image: heketi/heketi
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /hello
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        name: heketi
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /hello
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        volumeMounts:
+        - mountPath: /var/lib/heketi
+          name: db
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      serviceAccount: heketi-service-account
+      serviceAccountName: heketi-service-account
+      terminationGracePeriodSeconds: 30
+      nodeSelector:
+        kubernetes.io/hostname: master
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Equal      
+      volumes:
+      - hostPath:
+          path: /var/lib/heketi
+        name: db

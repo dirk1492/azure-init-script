@@ -58,8 +58,6 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/heketi
           name: glusterfs-heketi
-        - mountPath: /bricks
-          name: glusterfs-bricks
         - mountPath: /run
           name: glusterfs-run
         - mountPath: /run/lvm
@@ -111,8 +109,5 @@ spec:
       - hostPath:
           path: /sys/fs/cgroup
         name: glusterfs-cgroup
-      - hostPath:
-          path: /bricks
-        name: glusterfs-bricks
   updateStrategy:
     type: RollingUpdate
