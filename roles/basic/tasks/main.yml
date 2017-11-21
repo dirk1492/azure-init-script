@@ -43,14 +43,31 @@
     name: dm_snapshot
     state: present    
 
+- lineinfile:
+    path: /etc/modules
+    line: modprobe dm_snapshot
+    state: present
+    insertafter: EOF 
+
 - modprobe:
     name: dm_mirror
     state: present    
+
+- lineinfile:
+    path: /etc/modules
+    line: modprobe dm_mirror
+    state: present
+    insertafter: EOF 
 
 - modprobe:
     name: dm_thin_pool
     state: present    
 
+- lineinfile:
+    path: /etc/modules
+    line: modprobe dm_thin_pool
+    state: present
+    insertafter: EOF 
 
 
 #- name: Set unattended updates
