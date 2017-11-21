@@ -1,0 +1,72 @@
+{
+    "clusters": [
+        {
+            "nodes": [
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "node0"
+                            ],
+                            "storage": [
+                                "10.0.2.100"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        "/dev/sdc"
+                    ]
+                },
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "node1"
+                            ],
+                            "storage": [
+                                "10.0.2.101"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        "/dev/sdc"
+                    ]
+                },
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "node2"
+                            ],
+                            "storage": [
+                                "10.0.2.102"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        "/dev/sdc"
+                    ]
+                },
+                {
+                    "node": {
+                        "hostnames": {
+                            "manage": [
+                                "master"
+                            ],
+                            "storage": [
+                                "10.0.2.10"
+                            ]
+                        },
+                        "zone": 1
+                    },
+                    "devices": [
+                        "/dev/sdc"
+                    ]
+                }
+            ]
+        }
+    ]
+}
