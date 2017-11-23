@@ -69,6 +69,7 @@ spec:
       schedulerName: default-scheduler
       serviceAccount: heketi-service-account
       serviceAccountName: heketi-service-account
+      strategy: Recreate
       terminationGracePeriodSeconds: 30
       nodeSelector:
         kubernetes.io/hostname: master
@@ -84,6 +85,6 @@ spec:
       - name: topology
         configMap:
           name: heketi-topology
-          items:
+          items: 
           - key: topology.json
-            path: topology.json        
+            path: topology.json 
