@@ -65,7 +65,7 @@
   failed_when: false
 
 - name: Deploy heketi sevice account
-  shell: kubectl apply -f  roles/master/files/heketi-service-account.yml --kubeconfig /etc/kubernetes/admin.conf  
+  shell: kubectl apply -f  roles/master/files/heketi-service-account.yaml --kubeconfig /etc/kubernetes/admin.conf  
 
 - name: Deploy heketi cluster role binding
   shell: kubectl apply -f  roles/master/files/heketi-rbac.yaml --kubeconfig /etc/kubernetes/admin.conf
