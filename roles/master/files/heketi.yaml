@@ -62,7 +62,8 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/heketi
           name: db
-        - mountPath: /var/lib/heketi
+        - mountPath: /etc/heketi/topology.json
+          subPath: topology.json
           name: topology
       dnsPolicy: ClusterFirst
       restartPolicy: Always
@@ -84,6 +85,3 @@ spec:
       - name: topology
         configMap:
           name: heketi-topology
-          items:
-          - key: topology.json
-            path: topology.json        
