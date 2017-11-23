@@ -15,7 +15,7 @@
   when: check_out.rc != 0
 
 - name: Label glusterfs storagenode
-  shell: kubectl label node {{ inventory_hostname }} storagenode=glusterfs > /dev/null 2>&1
+  shell: kubectl label node $(hostname) storagenode=glusterfs > /dev/null 2>&1
   ignore_errors: yes
   register: label_out
   changed_when: label_out.rc == 0
