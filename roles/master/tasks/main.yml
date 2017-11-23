@@ -58,8 +58,16 @@
   shell: kubectl apply -f roles/master/files/glusterfs-statefulset.yaml --kubeconfig /etc/kubernetes/admin.conf
   
 - name: Label glusterfs nodes
-  shell: kubectl label node {{ inventory_hostname }} storagenode=glusterfs > /dev/null 2>&1
-  ignore_errors: yes
-  register: label_out
-  changed_when: label_out.rc == 0
-  failed_when: false
+  shell: kubectl label node {{ inventory_hostname }} storagenode=glusterfs --kubeconfig /etc/kubernetes/admin.conf > /dev/null 2>&1
+
+- name: Deploy heketi sevice account
+  shell: kubectl apply -f  roles/master/files/heketi-service-account.yaml --kubeconfig /etc/kubernetes/admin.conf  
+
+- name: Deploy heketi cluster role binding
+  shell: kubectl apply -f  roles/master/files/heketi-rbac.yaml --kubeconfig /etc/kubernetes/admin.conf
+
+- name: Deploy heketi server
+  shell: kubectl apply -f  roles/master/files/heketi.yaml --kubeconfig /etc/kubernetes/admin.conf
+
+- name: Deploy heketi service
+  shell: kubectl apply -f  roles/master/files/heketi-service.yaml --kubeconfig /etc/kubernetes/admin.conf
