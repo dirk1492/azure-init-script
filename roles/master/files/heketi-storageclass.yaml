@@ -1,12 +1,8 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  creationTimestamp: 2017-10-25T07:13:30Z
-  name: slow
-  resourceVersion: "207051"
-  selfLink: /apis/storage.k8s.io/v1/storageclasses/slow
-  uid: 00cee8b2-b954-11e7-8427-000d3a179772
+  name: heketi 
 parameters:
-  resturl: http://10.104.170.64:8080
+  resturl: http://1.1.1.1:8080
 provisioner: kubernetes.io/glusterfs
 reclaimPolicy: Delete
