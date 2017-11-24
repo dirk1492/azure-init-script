@@ -111,11 +111,11 @@
     heketi_cluster_ip: "{{ ip_out.stdout}}"
 
 - name: Check storage class
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf if ! kubectl get storageclass heketi -n heketi >/dev/null 2>&1 ; then cat roles/master/files/heketi-storageclass.yaml | sed "s#http://.*:8080#http://{{ heketi_cluster_ip }}:8080#" | kubectl apply -f - && echo "changed" ; fi
+  shell: if ! {{kubectl}} get storageclass heketi -n heketi >/dev/null 2>&1 ; then cat roles/master/files/heketi-storageclass.yaml | sed "s#http://.*:8080#http://{{ heketi_cluster_ip }}:8080#" | {{kubectl}} apply -f - && echo "changed" ; fi
   register: create_out
   changed_when: create_out.stdout != ""
 
 - name: Check resturl in storage class
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf if [ "$(kubectl get storageclass heketi -n heketi -o yaml 2>/dev/null | grep "resturl:" | awk -F ":" '{ print $3 }' | cut -c 3-)" != "{{ heketi_cluster_ip }}" ] ; then kubectl delete storageclass heketi -n heketi && cat roles/master/files/heketi-storageclass.yaml | sed "s#http://.*:8080#http://{{ heketi_cluster_ip }}:8080#" | kubectl apply -f - ; fi
+  shell: if [ "$({{kubectl}} get storageclass heketi -n heketi -o yaml 2>/dev/null | grep "resturl:" | awk -F ":" '{ print $3 }' | cut -c 3-)" != "{{ heketi_cluster_ip }}" ] ; then {{kubectl}} delete storageclass heketi -n heketi && cat roles/master/files/heketi-storageclass.yaml | sed "s#http://.*:8080#http://{{ heketi_cluster_ip }}:8080#" | {{kubectl}} apply -f - ; fi
   register: version_out
   changed_when: version_out.stdout != ""
