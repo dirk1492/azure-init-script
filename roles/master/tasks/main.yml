@@ -22,16 +22,16 @@
     path: /home/dil/.kube/
     state: directory
 
-- name: Create root kube home dir
-  file:
-    path: /root/.kube/
-    state: directory
+#- name: Create root kube home dir
+#  file:
+#    path: /root/.kube/
+#    state: directory
 
 - name: Copy admin.conf to user directory
   copy: remote_src=True src=/etc/kubernetes/admin.conf dest=/home/dil/.kube/config
 
-- name: Copy admin.conf to root directory
-  copy: remote_src=True src=/etc/kubernetes/admin.conf dest=/root/.kube/config
+#- name: Copy admin.conf to root directory
+#  copy: remote_src=True src=/etc/kubernetes/admin.conf dest=/root/.kube/config
 
 - name: Set user of admin.conf
   file: 
@@ -42,22 +42,22 @@
   when: admin_st.stat.exists == True
 
 - name: Deploy weave net 
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://git.io/weave-kube-1.6
+  shell: "{{kubectl}} apply -f https://git.io/weave-kube-1.6"
 
 - name: Deploy kubernetes dashboard 
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml 
+  shell: "{{kubectl}} apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml "
 
 - name: Deploy kubernetes dashboard admin RBAC 
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f roles/master/files/kube-dashboard-admin.yaml 
+  shell: "{{kubectl}} apply -f roles/master/files/kube-dashboard-admin.yaml "
 
 - name: Deploy heapster 
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/standalone/heapster-controller.yaml
+  shell: "{{kubectl}} apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/standalone/heapster-controller.yaml"
   
 - name: Deploy heapster RBAC 
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/rbac/heapster-rbac.yaml 
+  shell: "{{kubectl}} apply -f https://raw.githubusercontent.com/kubernetes/heapster/master/deploy/kube-config/rbac/heapster-rbac.yaml "
 
 - name: Create namespace heketi 
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl create ns heketi > /dev/null 2>&1
+  shell: "{{kubectl}} create ns heketi > /dev/null 2>&1"
   ignore_errors: yes
   register: ns_out
   changed_when: ns_out.rc == 0
@@ -67,35 +67,34 @@
   file: path=/bricks state=directory
 
 - name: Deploy glusterfs stateful set 
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f roles/master/files/glusterfs-statefulset.yaml
+  shell: "{{kubectl}} apply -f roles/master/files/glusterfs-statefulset.yaml"
   
 - name: Label glusterfs storagenode
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl label node $(hostname) storagenode=glusterfs > /dev/null 2>&1
+  shell: "{{kubectl}} label node $(hostname) storagenode=glusterfs > /dev/null 2>&1"
   ignore_errors: yes
   register: label_out
   changed_when: label_out.rc == 0
   failed_when: false
 
 - name: Deploy heketi sevice account
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f  roles/master/files/heketi-service-account.yaml
+  shell: "{{kubectl}} apply -f  roles/master/files/heketi-service-account.yaml"
 
 - name: Deploy heketi cluster role binding
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f  roles/master/files/heketi-rbac.yaml
+  shell: "{{kubectl}} apply -f  roles/master/files/heketi-rbac.yaml"
 
 - name: Deploy topology config map
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf if ! kubectl get cm heketi-topology -n heketi >/dev/null 2>&1 ; then kubectl create configmap heketi-topology -n heketi --from-file=roles/master/files/topology.json ; fi
-  #ignore_errors: yes
+  shell: if ! {{kubectl}} get cm heketi-topology -n heketi >/dev/null 2>&1 ; then {{kubectl}} create configmap heketi-topology -n heketi --from-file=roles/master/files/topology.json ; fi
   register: cm_out
   changed_when: cm_out.stdout != ""
 
 - name: Deploy heketi server
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f  roles/master/files/heketi.yaml
+  shell: "{{kubectl}} apply -f  roles/master/files/heketi.yaml"
 
 - name: Deploy heketi service 
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f  roles/master/files/heketi-service.yaml 
+  shell: "{{kubectl}} apply -f  roles/master/files/heketi-service.yaml "
 
 - name: Get heketi pod name
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl get pod -n heketi  | grep heketi- | awk '{ print $1 }'
+  shell: "{{kubectl}} get pod -n heketi  | grep heketi- | awk '{ print $1 }'"
   register: podname_out
 
 #- name: Load heketi topology
@@ -104,7 +103,7 @@
 #  changed_when: topology_out.stdout.find('Adding') != -1 or topology_out.stdout.find('Creating') != -1
 
 - name: Get heketi ClusterIP
-  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl get svc heketi -n heketi | grep heketi | awk '{ print $3 }'
+  shell: "{{kubectl}} get svc heketi -n heketi | grep heketi | awk '{ print $3 }'"
   register: ip_out
 
 - set_fact:

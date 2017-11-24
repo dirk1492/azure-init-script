@@ -50,8 +50,6 @@ if [ -n "$4" ]; then
     PUBLIC_IP="$4"
 fi
 
-export KUBECONFIG=/etc/kubernetes/admin.conf
-
 if [ -n "$1" ]; then
     ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory --extra-vars="k8s_token=$TOKEN apiserver_bind_port=$PORT public_ip=$PUBLIC_IP" $1.yml 
 else     
