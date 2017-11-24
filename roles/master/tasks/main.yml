@@ -10,6 +10,10 @@
   shell: kubeadm init --apiserver-bind-port {{ apiserver_bind_port }} --token {{ k8s_token }} --apiserver-cert-extra-sans {{ public_ip }}
   when: admin_st.stat.exists == False
 
+- name: Wait 300 seconds for kubernetes api server
+  wait_for:
+    port: 443
+
 - stat: path=/etc/kubernetes/admin.conf
   register: admin_st
 
