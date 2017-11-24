@@ -45,7 +45,7 @@
   shell: kubectl apply -f https://git.io/weave-kube-1.6 --kubeconfig=/etc/kubernetes/admin.conf
 
 - name: Deploy kubernetes dashboard 
-  shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml 
+  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml 
 
 - name: Deploy kubernetes dashboard admin RBAC 
   shell: kubectl apply -f roles/master/files/kube-dashboard-admin.yaml 
