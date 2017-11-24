@@ -79,11 +79,10 @@
   shell: kubectl apply -f  roles/master/files/heketi-rbac.yaml
 
 - name: Deploy topology config map
-  shell: kubectl create configmap heketi-topology --from-file=roles/master/files/topology.json
-  ignore_errors: yes
+  shell: if ! kubectl get cm heketi-topology -n heketi >/dev/null 2>&1 ; then kubectl create configmap heketi-topology -n heketi --from-file=roles/master/files/topology.json ; fi
+  #ignore_errors: yes
   register: cm_out
-  changed_when: cm_out.rc == 0
-  failed_when: false
+  changed_when: cm_out.stdout != ""
 
 - name: Deploy heketi server
   shell: kubectl apply -f  roles/master/files/heketi.yaml
