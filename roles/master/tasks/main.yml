@@ -42,7 +42,7 @@
   when: admin_st.stat.exists == True
 
 - name: Deploy weave net 
-  shell: kubectl apply -f https://git.io/weave-kube-1.6
+  shell: KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://git.io/weave-kube-1.6
 
 - name: Deploy kubernetes dashboard 
   shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml 
