@@ -1,0 +1,80 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: traefik-ingress-lb
+  name: traefik-ingress-controller
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress-lb
+      name: traefik-ingress-lb
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        name: traefik-ingress-lb
+    spec:
+      containers:
+      - args:
+        - --consul
+        - --consul.endpoint=consul.kube-system.svc.cluster.local:8500
+        - -d
+        - --web
+        - --kubernetes
+        - --logLevel=ERROR
+        image: traefik:alpine
+        imagePullPolicy: Always
+        name: traefik-ingress-lb
+        ports:
+        - containerPort: 80
+          hostPort: 80
+          name: http
+          protocol: TCP
+        - containerPort: 443
+          hostPort: 443
+          name: https
+          protocol: TCP
+        - containerPort: 8080
+          hostPort: 8080
+          name: admin
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 200m
+            memory: 30Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /etc/traefik/traefik.toml
+          name: traefik-cfg
+        - mountPath: /etc/resolv.conf
+          name: dns
+          subPath: resolv.conf
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      serviceAccount: traefik-ingress-controller
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: traefik-cfg
+        name: traefik-cfg
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: resolv.conf
+            path: resolv.conf
+          name: dns
+        name: dns
+  templateGeneration: 3
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
