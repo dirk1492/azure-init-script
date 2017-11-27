@@ -11,7 +11,13 @@ spec:
     - protocol: TCP
       port: 80
       name: web
+      nodePort: 32000
+    - protocol: TCP
+      port: 443
+      name: web
+      nodePort: 32001
     - protocol: TCP
       port: 8080
       name: admin
+      nodePort: 32002      
   type: NodePort
