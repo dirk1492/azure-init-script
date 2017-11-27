@@ -35,7 +35,6 @@
 - name: Wait for first traefik controller
   wait_for:
     port: 32002
-    delay: 10
 
 - name: Get pod name of a traefik controller
   shell: kubectl get pods -n kube-system | grep traefik-ingress-controller | grep Running | tail -n1 | awk '{ print $1 }'
