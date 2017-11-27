@@ -14,7 +14,7 @@ spec:
       nodePort: 32000
     - protocol: TCP
       port: 443
-      name: web
+      name: https
       nodePort: 32001
     - protocol: TCP
       port: 8080
