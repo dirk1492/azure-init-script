@@ -1,2 +1,15 @@
 ---
 # tasks file for traefik
+- name: Label consul nodes
+  shell: kubectl label nodes node0 node1 node2 consul=server
+
+- name: Deploy consul nodes
+  shell: kubectl apply -f roles/traefik/files/consul-statefulset.yaml
+
+- name: Get kube dns ip address
+  shell: kubectl get svc kube-dns -n kube-system | tail -n1 | awk '{ print $3 }'
+  register: dns_out
+
+- name: Deploy resolv.conf config map
+  shell: cat roles/traefik/file/dns-cm.yaml | sed "s#nameserver .*#nameserver {{ dns_out.stdout }}#" | kubectl apply -f -    
+   

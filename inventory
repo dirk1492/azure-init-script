@@ -1,1 +1,10 @@
 localhost ansible_connection=local
+
+[master]
+master
+
+[nodes]
+node0
+node1
+node2
+
