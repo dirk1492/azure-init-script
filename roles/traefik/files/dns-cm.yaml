@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  resolv.conf: |
+    nameserver 10.96.0.10
+    search kube-system.svc.cluster.local svc.cluster.local cluster.local
+kind: ConfigMap
+metadata:
+  name: dns
+  namespace: kube-system
