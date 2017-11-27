@@ -51,7 +51,8 @@ spec:
           privileged: true
         volumeMounts:
         - mountPath: /etc/traefik/traefik.toml
-          name: traefik-cfg
+          name: traefik
+          subPath: traefik.toml
         - mountPath: /etc/resolv.conf
           name: dns
           subPath: resolv.conf
