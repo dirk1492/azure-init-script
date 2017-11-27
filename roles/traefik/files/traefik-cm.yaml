@@ -51,4 +51,4 @@ data:
 kind: ConfigMap
 metadata:
   name: traefik
-  namespace: kueb-system
+  namespace: kube-system
