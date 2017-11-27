@@ -24,3 +24,24 @@
 
 - name: Deploy traefik deamonset
   shell: kubectl apply -f roles/traefik/files/traefik-ds.yaml
+
+- name: Wait for first traefik controller
+  wait_for:
+    port: 32002
+    delay: 10
+
+- name: Get pod name of a traefik controller
+  shell: kubectl get pods -n kube-system | grep traefik-ingress-controller | grep Running | tail -n1 | awk '{ print $1 }'
+  register: pod_name_out
+
+- name: Check if config exits
+  shell: kubectl --namespace kube-system exec -it consul-0 consul kv get traefik/loglevel
+  register: config_out
+  changed_when: config_out.stdout != "INFO"
+
+- name: Copy config to consul
+  shell: kubectl --namespace kube-system exec -it {{ pod_name_out.stdout }} traefik storeconfig
+  when: config_out.changed
+
+- name: Bugfix https://github.com/containous/traefik/issues/927
+  shell: kubectl --namespace kube-system exec -it consul-0 consul kv delete traefik/acme/storagefile  
