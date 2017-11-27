@@ -1,6 +1,6 @@
 localhost ansible_connection=local
 
-[master]
+[masters]
 master
 
 [nodes]

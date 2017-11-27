@@ -11,5 +11,5 @@
   register: dns_out
 
 - name: Deploy resolv.conf config map
-  shell: cat roles/traefik/file/dns-cm.yaml | sed "s#nameserver .*#nameserver {{ dns_out.stdout }}#" | kubectl apply -f -    
+  shell: cat roles/traefik/files/dns-cm.yaml | sed "s#nameserver .*#nameserver {{ dns_out.stdout }}#" | kubectl apply -f -    
    
