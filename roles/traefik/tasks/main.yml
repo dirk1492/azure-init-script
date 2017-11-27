@@ -13,3 +13,14 @@
 - name: Deploy resolv.conf config map
   shell: cat roles/traefik/files/dns-cm.yaml | sed "s#nameserver .*#nameserver {{ dns_out.stdout }}#" | kubectl apply -f -    
    
+- name: Deploy traefik config map
+  shell: kubectl apply -f roles/traefik/files/traefik-cm.yaml
+    
+- name: Deploy traefik service account
+  shell: kubectl apply -f roles/traefik/files/traefik-sa.yaml
+
+- name: Deploy traefik service
+  shell: kubectl apply -f roles/traefik/files/traefik-svc.yaml
+
+- name: Deploy traefik deamonset
+  shell: kubectl apply -f roles/traefik/files/traefik-ds.yaml
