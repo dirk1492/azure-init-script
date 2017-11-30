@@ -215,7 +215,7 @@ LOGLEVEL = ARGS.loglevel
 
 LOG.setLevel(LOGLEVEL)
 
-LOG.error("Start topology detection for heketi...")
+LOG.info("Start topology detection for heketi...")
 
 if not ARGS.force and HEKETI.check_topology(TOPOLOGY):
     LOG.info("Current topology is already loaded")
