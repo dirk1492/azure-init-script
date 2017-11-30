@@ -59,7 +59,7 @@
   changed_when: version_out.stdout != ""
 
 - name: Load heketi topology
-  shell: kubectl exec {{ podname_out.stdout }} -n heketi heketi-cli -- topology load --json=/etc/heketi/topology.json  
+  shell: ./roles/heketi/files/topology.py  
   register: topology_out
-  changed_when: topology_out.stdout.find('Adding') != -1 or topology_out.stdout.find('Creating') != -1
+  changed_when: topology_out.stdout.find('loaded') == -1
   
