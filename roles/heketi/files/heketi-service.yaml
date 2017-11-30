@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    description: Exposes Heketi Service
+  labels:
+    glusterfs: heketi-service
+  name: heketi
+  namespace: heketi
+spec:
+  ports:
+  - name: heketi
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    name: heketi
+  type: ClusterIP

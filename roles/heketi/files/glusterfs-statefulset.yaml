@@ -1,0 +1,113 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  annotations:
+    description: GlusterFS Stateful Set
+    tags: glusterfs
+  labels:
+    glusterfs: deployment
+  name: glusterfs
+  namespace: heketi
+spec:
+  podManagementPolicy: Parallel
+  replicas: 3
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      glusterfs: pod
+      glusterfs-node: pod
+  serviceName: glusterfs
+  template:
+    metadata:
+      labels:
+        glusterfs: pod
+        glusterfs-node: pod
+      name: glusterfs
+    spec:
+      containers:
+      - image: gluster/gluster-centos
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - systemctl status glusterd.service
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        name: glusterfs
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - systemctl status glusterd.service
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/heketi
+          name: glusterfs-heketi
+        - mountPath: /run
+          name: glusterfs-run
+        - mountPath: /run/lvm
+          name: glusterfs-lvm
+        - mountPath: /etc/glusterfs
+          name: glusterfs-etc
+        - mountPath: /var/log/glusterfs
+          name: glusterfs-logs
+        - mountPath: /var/lib/glusterd
+          name: glusterfs-config
+        - mountPath: /dev
+          name: glusterfs-dev
+        - mountPath: /sys/fs/cgroup
+          name: glusterfs-cgroup
+        - mountPath: /bricks
+          name: glusterfs-bricks
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      nodeSelector:
+        storagenode: glusterfs
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Equal
+      volumes:
+      - hostPath:
+          path: /var/lib/heketi
+        name: glusterfs-heketi
+      - hostPath:
+          path: /bricks
+        name: glusterfs-bricks
+      - emptyDir: {}
+        name: glusterfs-run
+      - hostPath:
+          path: /run/lvm
+        name: glusterfs-lvm
+      - hostPath:
+          path: /etc/glusterfs
+        name: glusterfs-etc
+      - hostPath:
+          path: /var/log/glusterfs
+        name: glusterfs-logs
+      - hostPath:
+          path: /var/lib/glusterd
+        name: glusterfs-config
+      - hostPath:
+          path: /dev
+        name: glusterfs-dev
+      - hostPath:
+          path: /sys/fs/cgroup
+        name: glusterfs-cgroup
+  updateStrategy:
+    type: RollingUpdate
