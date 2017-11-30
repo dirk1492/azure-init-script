@@ -18,7 +18,7 @@ class Heketi(object):
             self.heketi = heketi
             self.glusterfs = glusterfs
 
-    def __init__(self, kubeconfig, gluster_pattern = 'glusterfs-', heketi_pattern = 'heketi-'):
+    def __init__(self, kubeconfig, gluster_pattern='glusterfs-', heketi_pattern='heketi-'):
         self.kubeconfig = kubeconfig
         self.pods = None
         self.client = None
@@ -164,7 +164,7 @@ class Heketi(object):
     def check_topology(self, topology):
         data = self.heketi_exec("heketi-cli topology info --json")
         if data:
-            tp = json.loads(data)
+            tp = json.loads(data.decode('utf-8'))
             return Heketi._is_equal(tp, topology)
 
         return False
@@ -202,10 +202,10 @@ class Heketi(object):
 
 PARSER = argparse.ArgumentParser(description='Autodetect hektei topology file.')
 PARSER.add_argument('--kubeconfig', help='path to the kubernetes admin config file (default: ~/.kube.config)', default="")
-PARSER.add_argument('--pretty', help='print topology in pretty format', default=False)
-PARSER.add_argument('--dryrun', help='don\'t load topology to heketi', default=True)
-PARSER.add_argument('--force', help='reload an existing topology to heketi', default=False)
-PARSER.add_argument('--loglevel', help='set the loglevel (0 < x < 60)', default=0)
+PARSER.add_argument('--pretty', help='print topology in pretty format', action='store_true')
+PARSER.add_argument('--dryrun', help='don\'t load topology to heketi', action='store_true')
+PARSER.add_argument('--force', help='reload an existing topology to heketi', action='store_true')
+PARSER.add_argument('--loglevel', help='set the loglevel (0 < x < 60)', default=logging.INFO)
 
 ARGS = PARSER.parse_args()
 
@@ -215,17 +215,19 @@ LOGLEVEL = ARGS.loglevel
 
 LOG.setLevel(LOGLEVEL)
 
+LOG.error("Start topology detection for heketi...")
+
 if not ARGS.force and HEKETI.check_topology(TOPOLOGY):
-    LOG.info("topology already loaded")
+    LOG.info("Current topology already loaded")
     exit(0)
 
-print('copy topology to /tmp/topology.json on heketi pod')
+LOG.info('copy topology to /tmp/topology.json on heketi pod')
 if ARGS.pretty:
     HEKETI.copy_text(str(json.dumps(TOPOLOGY, indent=4, separators=(',', ': '))), "/tmp/topology.json")
 else:
     HEKETI.copy_text(str(json.dumps(TOPOLOGY)), "/tmp/topology.json")
 
 if not ARGS.dryrun:
-    print(str(HEKETI.heketi_exec("heketi-cli topology load --json=/tmp/topology.json")))
+    LOG.info(str(HEKETI.heketi_exec("heketi-cli topology load --json=/tmp/topology.json")))
 else:
-    print('Please run heketi-cli topology load --json=/tmp/topology.json on ' + HEKETI.get_heketi_pod())
+    LOG.info('Please run heketi-cli topology load --json=/tmp/topology.json on ' + HEKETI.get_heketi_pod())
