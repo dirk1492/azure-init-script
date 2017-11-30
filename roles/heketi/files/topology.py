@@ -218,7 +218,7 @@ LOG.setLevel(LOGLEVEL)
 LOG.error("Start topology detection for heketi...")
 
 if not ARGS.force and HEKETI.check_topology(TOPOLOGY):
-    LOG.info("Current topology already loaded")
+    LOG.info("Current topology is already loaded")
     exit(0)
 
 LOG.info('copy topology to /tmp/topology.json on heketi pod')
