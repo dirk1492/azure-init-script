@@ -1,2 +1,65 @@
 ---
-# tasks file for heketi
+- name: Create namespace heketi 
+  shell: "{{kubectl}} create ns heketi > /dev/null 2>&1"
+  ignore_errors: yes
+  register: ns_out
+  changed_when: ns_out.rc == 0
+  failed_when: false
+
+- name: Creates gluster bricks directory
+  file: path=/bricks state=directory
+
+- name: Deploy glusterfs stateful set 
+  shell: "{{kubectl}} apply -f roles/master/files/glusterfs-statefulset.yaml"
+  
+- name: Label glusterfs storagenode
+  shell: "{{kubectl}} label node $(hostname) storagenode=glusterfs > /dev/null 2>&1"
+  ignore_errors: yes
+  register: label_out
+  changed_when: label_out.rc == 0
+  failed_when: false
+
+- name: Deploy heketi sevice account
+  shell: "{{kubectl}} apply -f  roles/master/files/heketi-service-account.yaml"
+
+- name: Deploy heketi cluster role binding
+  shell: "{{kubectl}} apply -f  roles/master/files/heketi-rbac.yaml"
+
+- name: Deploy topology config map
+  shell: if ! {{kubectl}} get cm heketi-topology -n heketi >/dev/null 2>&1 ; then {{kubectl}} create configmap heketi-topology -n heketi --from-file=roles/master/files/topology.json ; fi
+  register: cm_out
+  changed_when: cm_out.stdout != ""
+
+- name: Deploy heketi server
+  shell: "{{kubectl}} apply -f  roles/master/files/heketi.yaml"
+
+- name: Deploy heketi service 
+  shell: "{{kubectl}} apply -f  roles/master/files/heketi-service.yaml "
+
+- name: Get heketi pod name
+  shell: "{{kubectl}} get pod -n heketi  | grep heketi- | awk '{ print $1 }'"
+  register: podname_out
+
+- name: Get heketi ClusterIP
+  shell: "{{kubectl}} get svc heketi -n heketi | grep heketi | awk '{ print $3 }'"
+  register: ip_out
+
+- set_fact:
+    heketi_pod_name: "{{ podname_out.stdout }}" 
+    heketi_cluster_ip: "{{ ip_out.stdout}}"
+
+- name: Check storage class
+  shell: if ! {{kubectl}} get storageclass heketi -n heketi >/dev/null 2>&1 ; then cat roles/master/files/heketi-storageclass.yaml | sed "s#http://.*:8080#http://{{ heketi_cluster_ip }}:8080#" | {{kubectl}} apply -f - && echo "changed" ; fi
+  register: create_out
+  changed_when: create_out.stdout != ""
+
+- name: Check resturl in storage class
+  shell: if [ "$({{kubectl}} get storageclass heketi -n heketi -o yaml 2>/dev/null | grep "resturl:" | awk -F ":" '{ print $3 }' | cut -c 3-)" != "{{ heketi_cluster_ip }}" ] ; then {{kubectl}} delete storageclass heketi -n heketi && cat roles/master/files/heketi-storageclass.yaml | sed "s#http://.*:8080#http://{{ heketi_cluster_ip }}:8080#" | {{kubectl}} apply -f - ; fi
+  register: version_out
+  changed_when: version_out.stdout != ""
+
+- name: Load heketi topology
+  shell: kubectl exec {{ podname_out.stdout }} -n heketi heketi-cli -- topology load --json=/etc/heketi/topology.json  
+  register: topology_out
+  changed_when: topology_out.stdout.find('Adding') != -1 or topology_out.stdout.find('Creating') != -1
+  
