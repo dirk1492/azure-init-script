@@ -228,6 +228,6 @@ else:
     HEKETI.copy_text(str(json.dumps(TOPOLOGY)), "/tmp/topology.json")
 
 if not ARGS.dryrun:
-    LOG.info(str(HEKETI.heketi_exec("heketi-cli topology load --json=/tmp/topology.json")))
+    LOG.info("Result:\n" + str(HEKETI.heketi_exec("heketi-cli topology load --json=/tmp/topology.json")))
 else:
     LOG.info('Please run heketi-cli topology load --json=/tmp/topology.json on ' + HEKETI.get_heketi_pod())
