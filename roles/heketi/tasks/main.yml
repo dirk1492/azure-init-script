@@ -19,7 +19,9 @@
   failed_when: false
 
 - name: Deploy glusterfs stateful set 
-  shell: "{{kubectl}} apply -f {{ role_path }}/files/glusterfs-statefulset.yaml"
+  shell: if ! {{kubectl}} get statefulset glusterfs -n heketi >/dev/null 2>&1 ; then {{kubectl}} apply -f {{ role_path }}/files/glusterfs-statefulset.yaml
+  register: glusterfs_out
+  changed_when: glusterfs_out.stdout != ""
   
 - name: Label glusterfs storagenode
   shell: "{{kubectl}} label node $(hostname) storagenode=glusterfs > /dev/null 2>&1"
