@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Update repositories cache and install aptitude package
+    apt:
+      name: aptitude
+      update_cache: yes
+  - name: Upgrade system
+    apt:
+      upgrade: full  
+  - name: Install Nginx
+    apt:
+      name: nginx
+      state: installed
+      update_cache: true
