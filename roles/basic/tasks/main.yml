@@ -11,7 +11,7 @@
     state: present
     filename: 'kubernetes'
 
-- name: Update repositories cache and install aptiotude package
+- name: Update repositories cache and install aptitude package
   apt:
     name: aptitude
     update_cache: yes
@@ -27,6 +27,16 @@
 - name: Install docker.io package
   apt:
     name: docker.io
+
+- name: Install pip package
+  apt:
+    name: python-pip
+
+- pip:
+    name: pip
+
+- pip:
+    name: kubernetes        
 
 - user:
     name: dil
