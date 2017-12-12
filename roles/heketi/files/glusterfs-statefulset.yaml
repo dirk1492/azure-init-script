@@ -10,12 +10,12 @@ metadata:
   namespace: heketi
 spec:
   podManagementPolicy: Parallel
-  replicas: 3
+  replicas: 4
   revisionHistoryLimit: 1
   selector:
     matchLabels:
       glusterfs: pod
-      glusterfs-node: pod
+      glusterfs-node: pod      
   serviceName: glusterfs
   template:
     metadata:
@@ -24,6 +24,18 @@ spec:
         glusterfs-node: pod
       name: glusterfs
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: glusterfs
+                operator: Exists
+              - key: glusterfs
+                operator: In
+                values:
+                - pod
+            topologyKey: "kubernetes.io/hostname"      
       containers:
       - image: gluster/gluster-centos
         imagePullPolicy: Always
