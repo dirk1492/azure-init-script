@@ -60,25 +60,23 @@ spec:
         - mountPath: /var/lib/heketi
           name: db
         - mountPath: /etc/heketi/topology.json
-          subPath: topology.json
           name: topology
+          subPath: topology.json
       dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      serviceAccount: heketi-service-account
-      serviceAccountName: heketi-service-account
-      terminationGracePeriodSeconds: 30
       nodeSelector:
         kubernetes.io/hostname: master
+      restartPolicy: Always
+      serviceAccount: heketi-service-account
       tolerations:
       - effect: NoSchedule
         key: node-role.kubernetes.io/master
-        operator: Equal      
+        operator: Equal
       volumes:
       - hostPath:
           path: /var/lib/heketi
           type: DirectoryOrCreate
         name: db
-      - name: topology
-        configMap:
+      - configMap:
+          defaultMode: 420
           name: heketi-topology
+        name: topology
