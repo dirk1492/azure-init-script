@@ -1,10 +1,10 @@
 apiVersion: v1
 data:
+  logLevel: INFO
   traefik.toml: |-
     checkNewVersion = false
     IdleTimeout = "180s"
     MaxIdleConnsPerHost = 500
-    logLevel = "INFO"
     defaultEntryPoints = ["http", "https"]
 
     [retry]
@@ -22,12 +22,11 @@ data:
       buckets=[0.1,0.3,1.2,5.0]
 
     [consul]
-    endpoint = "consul:8500"
     watch = true
     prefix = "traefik"
 
     [acme]
-    email = "my@email.here"
+    email = "test99@email.here"
     storage = "traefik/acme/account"
     entryPoint = "https"
     OnHostRule = true
@@ -47,4 +46,3 @@ data:
 kind: ConfigMap
 metadata:
   name: traefik
-  namespace: kube-system
