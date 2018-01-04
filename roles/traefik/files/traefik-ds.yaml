@@ -4,7 +4,6 @@ metadata:
   labels:
     k8s-app: traefik-ingress-lb
   name: traefik-ingress-controller
-  namespace: kube-system
 spec:
   selector:
     matchLabels:
@@ -15,15 +14,27 @@ spec:
       labels:
         k8s-app: traefik-ingress-lb
         name: traefik-ingress-lb
+        #trafiknode: 
+        #  valueFrom:
+        #    fieldRef:
+        #      fieldPath: spec.nodeName
     spec:
       containers:
       - args:
-        - --consul
-        - --consul.endpoint=consul.kube-system.svc.cluster.local:8500
         - -d
-        - --web
-        - --kubernetes
-        - --logLevel=ERROR
+        - --logLevel=$(LOGLEVEL)
+        - --consul.endpoint=consul.$(NAMESPACE).svc.cluster.local:8500
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: LOGLEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: logLevel
+              name: traefik
         image: traefik:alpine
         imagePullPolicy: Always
         name: traefik-ingress-lb
@@ -53,10 +64,10 @@ spec:
         - mountPath: /etc/traefik/traefik.toml
           name: config
           subPath: traefik.toml
-        - mountPath: /etc/resolv.conf
-          name: dns
-          subPath: resolv.conf
-      dnsPolicy: ClusterFirst
+        - mountPath: /.htdigest
+          name: htdigest
+          subPath: .htdigest
+      dnsPolicy: ClusterFirstWithHostNet
       hostNetwork: true
       restartPolicy: Always
       serviceAccount: traefik-ingress-controller
@@ -67,14 +78,9 @@ spec:
           defaultMode: 420
           name: traefik
         name: config
-      - configMap:
-          defaultMode: 420
-          items:
-          - key: resolv.conf
-            path: resolv.conf
-          name: dns
-        name: dns
-  templateGeneration: 3
+      - name: htdigest
+        secret:
+          secretName: htdigest
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1

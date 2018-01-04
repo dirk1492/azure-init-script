@@ -3,15 +3,23 @@ data:
   logLevel: INFO
   traefik.toml: |-
     checkNewVersion = false
-    IdleTimeout = "180s"
     MaxIdleConnsPerHost = 500
     defaultEntryPoints = ["http", "https"]
+
+    [respondingTimeouts]
+    IdleTimeout = "180s"
 
     [retry]
     attempts = 3
 
+    [healthcheck]
+    interval = "10s"
+
     [web]
     address = ":8080"
+
+    #[web.auth.digest]
+    #usersFile = "./.htdigest"
 
     [kubernetes]
     #namespaces = ["default"]
@@ -22,10 +30,10 @@ data:
     [web.metrics.prometheus]
     buckets=[0.1,0.3,1.2,5.0]
 
-    [consul]
-    endpoint = "consul.traefik.svc.cluster.local:8500"
-    watch = true
-    prefix = "traefik"
+    #[consul]
+    #endpoint = "consul.traefik.svc.cluster.local:8500"
+    #watch = true
+    #prefix = "traefik"
 
     [acme]
     email = "test99@email.here"
@@ -41,10 +49,44 @@ data:
       address = ":80"
       compress = true
         [entryPoints.http.redirect]
-        entryPoint = "https"
+          entryPoint = "https"
       [entryPoints.https]
       address = ":443"
         [entryPoints.https.tls]
+
+    [file]
+      [frontends]
+        [frontends.traefik-node-1]
+          backend = "traefik-node-1"
+          entrypoints = ["https"]
+          #basicAuth = ["user:$apr1$ohYeFoRc$Y3IVMs/w8bXDRseUTtIL71"]
+          [frontends.traefik-node-1.routes.all]
+            rule = "PathPrefixStrip:/traefik0"
+        [frontends.traefik-node-2]
+          backend = "traefik-node-2"
+          entrypoints = ["https"]
+          #basicAuth = ["user:$apr1$ohYeFoRc$Y3IVMs/w8bXDRseUTtIL71"]
+          [frontends.traefik-node-2.routes.all]
+            rule = "PathPrefixStrip:/traefik1"
+        [frontends.traefik-node-3]
+          backend = "traefik-node-3"
+          entrypoints = ["https"]
+          #basicAuth = ["user:$apr1$ohYeFoRc$Y3IVMs/w8bXDRseUTtIL71"]
+          [frontends.traefik-node-3.routes.all]
+            rule = "PathPrefixStrip:/traefik2"
+
+      [backends]
+        [backends.traefik-node-1]
+          [backends.traefik-node-1.servers.node0]
+          url = "http://node0:8080"  
+        [backends.traefik-node-2]
+          [backends.traefik-node-2.servers.node1]
+          url = "http://node1:8080" 
+        [backends.traefik-node-3]
+          [backends.traefik-node-3.servers.node2]
+          url = "http://node2:8080" 
+
+
 kind: ConfigMap
 metadata:
   name: traefik
