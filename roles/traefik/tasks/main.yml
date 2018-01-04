@@ -30,7 +30,7 @@
   shell: kubectl apply -f {{ role_path }}/files/traefik-cm.yaml --namespace={{namespace}}
 
 - name: Deploy traefik .htdigest
-  shell: kubectl create cm htdigest --from-file={{ role_path }}/files/.htdigest --namespace={{namespace}}
+  shell: kubectl create secret generic htdigest --from-file={{ role_path }}/files/.htdigest --namespace={{namespace}}
 
 - name: Deploy traefik service account
   shell: "cat {{ role_path }}/files/traefik-sa.yaml | sed 's#namespace: traefik#namespace: {{namespace}}#' | kubectl apply -f -"
