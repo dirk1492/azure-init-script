@@ -25,9 +25,6 @@
 - name: Get kube dns ip address
   shell: kubectl get svc kube-dns -n kube-system | tail -n1 | awk '{ print $3 }'
   register: dns_out
-
-- name: Deploy resolv.conf config map
-  shell: cat {{ role_path }}/files/dns-cm.yaml | sed "s#nameserver .*#nameserver {{ dns_out.stdout }}#" | sed "s#search ns.svc.cluster.local#search {{namespace}}.svc.cluster.local#" | kubectl apply --namespace {{namespace}}  -f -    
    
 - name: Deploy traefik config map
   shell: kubectl apply -f {{ role_path }}/files/traefik-cm.yaml --namespace={{namespace}}
