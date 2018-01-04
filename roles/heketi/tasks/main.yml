@@ -18,6 +18,9 @@
   changed_when: ns_out.rc == 0
   failed_when: false
 
+- name: Label all nodes
+  shell: {{kubectl}} label nodes -all storagenode=glusterfs 
+
 - name: Deploy glusterfs stateful set 
   shell: if ! {{kubectl}} get statefulset glusterfs -n heketi >/dev/null 2>&1 ; then {{kubectl}} apply -f {{ role_path }}/files/glusterfs-statefulset.yaml ; fi
   register: glusterfs_out
