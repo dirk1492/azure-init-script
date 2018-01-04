@@ -5,6 +5,7 @@ import subprocess
 import logging
 
 
+import os.path
 from kubernetes import client, config
 
 FORMAT = '%(asctime)-15s %(levelname)-8s %(message)s'
@@ -18,8 +19,9 @@ class Heketi(object):
             self.heketi = heketi
             self.glusterfs = glusterfs
 
-    def __init__(self, kubeconfig, gluster_pattern='glusterfs-', heketi_pattern='heketi-'):
+    def __init__(self, kubeconfig, kubectl, gluster_pattern='glusterfs-', heketi_pattern='heketi-'):
         self.kubeconfig = kubeconfig
+        self.kubectl = kubectl
         self.pods = None
         self.client = None
         self.heketi_cmd = None
@@ -51,8 +53,9 @@ class Heketi(object):
         if not self.heketi_cmd:
             name = self.get_heketi_pod()
             ns = self.get_heketi_ns()
+
             if name and ns:
-                self.heketi_cmd = ["kubectl", "exec", name, "-n", ns, "--", "sh", "-c"]
+                self.heketi_cmd = [self.kubectl, "--kubeconfig" , self.kubeconfig , "exec", name, "-n", ns, "--", "sh", "-c"]
             else:
                 LOG.error("heketi pod not found")
                 exit(0)
@@ -172,6 +175,9 @@ class Heketi(object):
 
     @staticmethod
     def _is_equal(old, new):
+        if not old or not new :
+            return False
+
         cluster_old = Heketi._strip(old['clusters'])
         cluster_new = Heketi._strip(new['clusters'])
 
@@ -202,6 +208,7 @@ class Heketi(object):
 
 PARSER = argparse.ArgumentParser(description='Autodetect hektei topology file.')
 PARSER.add_argument('--kubeconfig', help='path to the kubernetes admin config file (default: ~/.kube.config)', default="")
+PARSER.add_argument('--kubectl', help='path to the kubectl (default: kubectl)', default="kubectl")
 PARSER.add_argument('--pretty', help='print topology in pretty format', action='store_true')
 PARSER.add_argument('--dryrun', help='don\'t load topology to heketi', action='store_true')
 PARSER.add_argument('--force', help='reload an existing topology to heketi', action='store_true')
@@ -209,7 +216,16 @@ PARSER.add_argument('--loglevel', help='set the loglevel (0 < x < 60)', default=
 
 ARGS = PARSER.parse_args()
 
-HEKETI = Heketi(ARGS.kubeconfig)
+if ARGS.kubeconfig and ARGS.kubeconfig != "" and (not os.path.isfile(ARGS.kubeconfig)):
+    LOG.error("Kubernetes configuration file not found.")
+    exit(-1)
+
+if not os.path.isfile(ARGS.kubectl):
+    LOG.error("kubectl not found.")
+    exit(-1)
+
+
+HEKETI = Heketi(ARGS.kubeconfig, ARGS.kubectl)
 TOPOLOGY = HEKETI.get_topologie()
 LOGLEVEL = ARGS.loglevel
 
