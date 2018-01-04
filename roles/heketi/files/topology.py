@@ -55,7 +55,7 @@ class Heketi(object):
             ns = self.get_heketi_ns()
 
             if name and ns:
-                self.heketi_cmd = [self.kubectl, "--kubeconfig" , self.kubeconfig , "exec", name, "-n", ns, "--", "sh", "-c"]
+                self.heketi_cmd = [self.kubectl, "--kubeconfig", self.kubeconfig, "exec", name, "-n", ns, "--", "sh", "-c"]
             else:
                 LOG.error("heketi pod not found")
                 exit(0)
@@ -89,7 +89,9 @@ class Heketi(object):
         cluster['nodes'] = nodes
 
         for pod in pods:
-            self._add_node(nodes, pod.spec.node_name, pod.status.pod_ip, ['/dev/sdc'])
+            if pod.status.phase == 'Running':
+                if pod.spec.node_name and pod.status.pod_ip:
+                    self._add_node(nodes, pod.spec.node_name, pod.status.pod_ip, ['/dev/sdc'])
 
         return rc
 
@@ -160,7 +162,8 @@ class Heketi(object):
                                 for name in names:
                                     for ip in ips:
                                         for dev in devs:
-                                            results.append(name + ',' + ip + ',' + dev)
+                                            if name and ip and dev:
+                                                results.append(name + ',' + ip + ',' + dev)
 
         return results
 
@@ -175,7 +178,7 @@ class Heketi(object):
 
     @staticmethod
     def _is_equal(old, new):
-        if not old or not new :
+        if (not old) or (not new):
             return False
 
         cluster_old = Heketi._strip(old['clusters'])
@@ -220,7 +223,7 @@ if ARGS.kubeconfig and ARGS.kubeconfig != "" and (not os.path.isfile(ARGS.kubeco
     LOG.error("Kubernetes configuration file not found.")
     exit(-1)
 
-if not os.path.isfile(ARGS.kubectl):
+if (ARGS.kubectl != "kubectl") and (not os.path.isfile(ARGS.kubectl)):
     LOG.error("kubectl not found.")
     exit(-1)
 
