@@ -90,9 +90,11 @@ class Heketi(object):
 
         for pod in pods:
             if pod.status.phase == 'Running':
-                if pod.spec.node_name and pod.status.pod_ip:
+                if pod.spec.hostname and pod.spec.node_name and pod.status.pod_ip:
+                    LOG.debug("found " + pod.spec.hostname + " on " + pod.spec.node_name + " (" + pod.status.pod_ip + ")")
                     self._add_node(nodes, pod.spec.node_name, pod.status.pod_ip, ['/dev/sdc'])
 
+        LOG.debug("topology = " + str(json.dumps(rc, indent=4, separators=(',', ': '))))
         return rc
 
     def _get_pods(self):
@@ -171,6 +173,7 @@ class Heketi(object):
         data = self.heketi_exec("heketi-cli topology info --json")
         if data:
             tp = json.loads(data.decode('utf-8'))
+            LOG.debug(str(json.dumps(tp, indent=4, separators=(',', ': '))))
             return Heketi._is_equal(tp, topology)
 
         return False
@@ -229,12 +232,12 @@ if (ARGS.kubectl != "kubectl") and (not os.path.isfile(ARGS.kubectl)):
 
 
 HEKETI = Heketi(ARGS.kubeconfig, ARGS.kubectl)
-TOPOLOGY = HEKETI.get_topologie()
 LOGLEVEL = ARGS.loglevel
 
 LOG.setLevel(LOGLEVEL)
 
 LOG.info("Start topology detection for heketi...")
+TOPOLOGY = HEKETI.get_topologie()
 
 if not ARGS.force and HEKETI.check_topology(TOPOLOGY):
     LOG.info("Current topology is already loaded")
