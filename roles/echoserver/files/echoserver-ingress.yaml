@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: echoserver-ingress
+spec:
+  rules:
+  - host: echoserver.kube.tk
+    http:
+      paths:
+      - backend:
+          serviceName: echoserver
+          servicePort: 8080
